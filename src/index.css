@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
@@ -137,38 +138,83 @@
   @apply transition-transform hover:scale-110 active:scale-90;
 }
 
-/* Dialog animation overrides */
-[data-state="open"][role="dialog"] {
-  animation: fadeIn 0.2s ease-out;
+/* Full-screen modal styles */
+.full-screen-modal {
+  @apply fixed inset-0 w-screen h-screen max-w-none m-0 p-0 overflow-hidden;
+  border-radius: 0 !important;
+  transform: none !important;
+  left: 0 !important;
+  top: 0 !important;
+  animation: fadeIn 0.3s ease-out !important;
 }
 
-[data-state="closed"][role="dialog"] {
-  animation: fadeOut 0.2s ease-out;
+/* Custom scrollbar for modal content */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
 }
 
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+/* Modal animations */
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: scale(0.95);
   }
   to {
     opacity: 1;
-    transform: scale(1);
   }
 }
 
 @keyframes fadeOut {
   from {
     opacity: 1;
-    transform: scale(1);
   }
   to {
     opacity: 0;
-    transform: scale(0.95);
   }
+}
+
+[data-state="open"][role="dialog"] {
+  animation: fadeIn 0.3s ease-out;
+}
+
+[data-state="closed"][role="dialog"] {
+  animation: fadeOut 0.3s ease-out;
+}
+
+/* For when modal is open to prevent background content scrolling */
+body[style*="overflow: hidden"] {
+  padding-right: 6px; /* Compensate for scrollbar disappearing */
 }
 
 /* Search bar focus effect */
 .search-bar:focus-within {
   @apply ring-2 ring-primary/20;
+}
+
+/* Background colors for category tags */
+@layer utilities {
+  .bg-category-photo {
+    @apply bg-blue-100;
+  }
+  
+  .bg-category-code {
+    @apply bg-purple-100;
+  }
+  
+  .bg-category-survey {
+    @apply bg-green-100;
+  }
 }

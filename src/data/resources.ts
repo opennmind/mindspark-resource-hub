@@ -471,7 +471,7 @@ export const upcomingProjects = [
   },
   {
     id: 'project-5',
-    title: 'Mobile Photography Challenge',
+    title: 'Photography Challenge',
     date: '2025-06-12',
     description: 'A 30-day challenge with daily assignments to improve your smartphone photography skills.'
   }

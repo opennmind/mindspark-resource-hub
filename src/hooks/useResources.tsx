@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { resources, Resource, ResourceCategory, upcomingProjects } from '@/data/resources';
+import { resources, Resource, ResourceCategory } from '@/data/resources';
 import { useToast } from "@/components/ui/use-toast";
 import { useUpcomingProjects, UpcomingProject } from "./useUpcomingProjects";
 
@@ -37,10 +37,14 @@ export const useResources = (): UseResourcesReturn => {
   
   const { toast } = useToast();
 
-  const { data: upcomingProjectsData } = useUpcomingProjects();
+  const { data: upcomingProjects, isLoading: isLoadingProjects, error: projectsError } = useUpcomingProjects();
 
   const getUpcomingProjects = (): UpcomingProject[] => {
-    return upcomingProjectsData || [];
+    if (projectsError) {
+      console.error("Error loading upcoming projects:", projectsError);
+      return [];
+    }
+    return upcomingProjects || [];
   };
 
   useEffect(() => {

@@ -1,7 +1,6 @@
 
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { upcomingProjects } from "@/data/resources";
 import { formatDistanceToNow } from 'date-fns';
 import { useState } from "react";
 import { 
@@ -12,20 +11,15 @@ import {
 } from "@/components/ui/dialog";
 import { X, ChevronLeft } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { UpcomingProject } from "@/hooks/useUpcomingProjects";
+import { Badge } from "@/components/ui/badge";
 
 interface UpcomingProjectsProps {
-  projects: typeof upcomingProjects;
-}
-
-interface Project {
-  id: string;
-  title: string;
-  description: string;
-  date: string;
+  projects: UpcomingProject[];
 }
 
 export const UpcomingProjects = ({ projects }: UpcomingProjectsProps) => {
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [selectedProject, setSelectedProject] = useState<UpcomingProject | null>(null);
   const [showAllProjects, setShowAllProjects] = useState(false);
   
   if (projects.length === 0) return null;
@@ -35,7 +29,7 @@ export const UpcomingProjects = ({ projects }: UpcomingProjectsProps) => {
     document.body.style.overflow = (!!selectedProject || showAllProjects) ? 'hidden' : '';
   }
 
-  const handleViewProject = (project: Project) => {
+  const handleViewProject = (project: UpcomingProject) => {
     setSelectedProject(project);
   };
 
@@ -194,5 +188,4 @@ export const UpcomingProjects = ({ projects }: UpcomingProjectsProps) => {
   );
 };
 
-import { Badge } from "@/components/ui/badge";
 export default UpcomingProjects;

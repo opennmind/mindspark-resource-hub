@@ -13,17 +13,24 @@ export const useUpcomingProjects = () => {
   return useQuery({
     queryKey: ["upcomingProjects"],
     queryFn: async (): Promise<UpcomingProject[]> => {
-      const { data, error } = await supabase
-        .from("upcoming_projects")
-        .select("*")
-        .order("date", { ascending: true });
+      try {
+        const { data, error } = await supabase
+          .from("upcoming_projects")
+          .select("*")
+          .order("date", { ascending: true });
 
-      if (error) {
-        console.error("Error fetching upcoming projects:", error);
-        throw error;
+        if (error) {
+          console.error("Error fetching upcoming projects:", error);
+          throw error;
+        }
+
+        return data || [];
+      } catch (err) {
+        console.error("Failed to fetch upcoming projects:", err);
+        throw err;
       }
-
-      return data;
     },
+    retry: 1,
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 };

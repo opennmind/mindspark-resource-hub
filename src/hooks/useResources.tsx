@@ -55,7 +55,21 @@ export const useResources = (): UseResourcesReturn => {
           throw error;
         }
 
-        return data as Resource[] || [];
+        // Map the database schema to our Resource type
+        return (data || []).map(item => ({
+          id: item.id,
+          title: item.title,
+          description: item.description,
+          category: item.category as ResourceCategory,
+          uploadDate: item.upload_date,
+          thumbnailUrl: item.thumbnail_url || undefined,
+          tags: item.tags,
+          author: {
+            name: item.author_name,
+            avatarUrl: item.author_avatar_url
+          },
+          detailedInfo: item.detailed_info || undefined
+        }));
       } catch (err) {
         console.error("Failed to fetch resources:", err);
         throw err;

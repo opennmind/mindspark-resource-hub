@@ -1,6 +1,9 @@
+
 import { useState, useEffect } from 'react';
-import { resources, Resource, ResourceCategory } from '@/data/resources';
+import { Resource, ResourceCategory } from '@/data/resources';
 import { useToast } from "@/components/ui/use-toast";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { useUpcomingProjects, UpcomingProject } from "./useUpcomingProjects";
 
 interface UseResourcesReturn {
@@ -24,8 +27,7 @@ interface UseResourcesReturn {
 }
 
 export const useResources = (): UseResourcesReturn => {
-  const [allResources] = useState<Resource[]>(resources);
-  const [filteredResources, setFilteredResources] = useState<Resource[]>(resources);
+  const [filteredResources, setFilteredResources] = useState<Resource[]>([]);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [recentlyViewed, setRecentlyViewed] = useState<Resource[]>([]);
   const [recommended, setRecommended] = useState<Resource[]>([]);
@@ -38,6 +40,30 @@ export const useResources = (): UseResourcesReturn => {
   const { toast } = useToast();
 
   const { data: upcomingProjects, isLoading: isLoadingProjects, error: projectsError } = useUpcomingProjects();
+
+  const { data: allResources = [], isLoading: isLoadingResources } = useQuery({
+    queryKey: ["resources"],
+    queryFn: async () => {
+      try {
+        const { data, error } = await supabase
+          .from("resources")
+          .select("*")
+          .order("upload_date", { ascending: false });
+
+        if (error) {
+          console.error("Error fetching resources:", error);
+          throw error;
+        }
+
+        return data as Resource[] || [];
+      } catch (err) {
+        console.error("Failed to fetch resources:", err);
+        throw err;
+      }
+    },
+    retry: 1,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
 
   const getUpcomingProjects = (): UpcomingProject[] => {
     if (projectsError) {
@@ -58,8 +84,10 @@ export const useResources = (): UseResourcesReturn => {
       setRecentlyViewed(JSON.parse(storedRecentlyViewed));
     }
 
-    const randomIndex = Math.floor(Math.random() * allResources.length);
-    setRecommended([allResources[randomIndex]]);
+    if (allResources.length > 0) {
+      const randomIndex = Math.floor(Math.random() * allResources.length);
+      setRecommended([allResources[randomIndex]]);
+    }
   }, [allResources]);
 
   useEffect(() => {

@@ -9,6 +9,48 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      resources: {
+        Row: {
+          author_avatar_url: string
+          author_name: string
+          category: Database["public"]["Enums"]["resource_category"]
+          created_at: string
+          description: string
+          detailed_info: string | null
+          id: string
+          tags: string[]
+          thumbnail_url: string | null
+          title: string
+          upload_date: string
+        }
+        Insert: {
+          author_avatar_url: string
+          author_name: string
+          category: Database["public"]["Enums"]["resource_category"]
+          created_at?: string
+          description: string
+          detailed_info?: string | null
+          id?: string
+          tags?: string[]
+          thumbnail_url?: string | null
+          title: string
+          upload_date?: string
+        }
+        Update: {
+          author_avatar_url?: string
+          author_name?: string
+          category?: Database["public"]["Enums"]["resource_category"]
+          created_at?: string
+          description?: string
+          detailed_info?: string | null
+          id?: string
+          tags?: string[]
+          thumbnail_url?: string | null
+          title?: string
+          upload_date?: string
+        }
+        Relationships: []
+      }
       Resources: {
         Row: {
           Category: string | null
@@ -77,7 +119,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      resource_category: "photo" | "code" | "survey"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -192,6 +234,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      resource_category: ["photo", "code", "survey"],
+    },
   },
 } as const

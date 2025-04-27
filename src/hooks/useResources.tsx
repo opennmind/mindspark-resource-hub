@@ -1,7 +1,7 @@
-
 import { useState, useEffect } from 'react';
 import { resources, Resource, ResourceCategory, upcomingProjects } from '@/data/resources';
 import { useToast } from "@/components/ui/use-toast";
+import { useUpcomingProjects, UpcomingProject } from "./useUpcomingProjects";
 
 interface UseResourcesReturn {
   allResources: Resource[];
@@ -20,7 +20,7 @@ interface UseResourcesReturn {
   toggleFavorite: (id: string) => void;
   viewResource: (resource: Resource) => void;
   getResourceById: (id: string) => Resource | undefined;
-  getUpcomingProjects: () => typeof upcomingProjects;
+  getUpcomingProjects: () => UpcomingProject[];
 }
 
 export const useResources = (): UseResourcesReturn => {
@@ -37,7 +37,12 @@ export const useResources = (): UseResourcesReturn => {
   
   const { toast } = useToast();
 
-  // Load favorites from localStorage
+  const { data: upcomingProjectsData } = useUpcomingProjects();
+
+  const getUpcomingProjects = (): UpcomingProject[] => {
+    return upcomingProjectsData || [];
+  };
+
   useEffect(() => {
     const storedFavorites = localStorage.getItem('favorites');
     if (storedFavorites) {
@@ -49,23 +54,19 @@ export const useResources = (): UseResourcesReturn => {
       setRecentlyViewed(JSON.parse(storedRecentlyViewed));
     }
 
-    // Set a random recommended resource
     const randomIndex = Math.floor(Math.random() * allResources.length);
     setRecommended([allResources[randomIndex]]);
   }, [allResources]);
 
-  // Apply filters and sorting
   useEffect(() => {
     let results = [...allResources];
     
-    // Filter by category
     if (activeCategory !== 'all' && activeCategory !== 'favorites') {
       results = results.filter(resource => resource.category === activeCategory);
     } else if (activeCategory === 'favorites') {
       results = results.filter(resource => favorites.includes(resource.id));
     }
 
-    // Sort resources
     if (sortOrder === 'a-z') {
       results.sort((a, b) => a.title.localeCompare(b.title));
     } else {
@@ -75,7 +76,6 @@ export const useResources = (): UseResourcesReturn => {
     setFilteredResources(results);
   }, [allResources, activeCategory, sortOrder, favorites]);
 
-  // Search functionality
   useEffect(() => {
     if (searchTerm.trim() === '') {
       setSearchResults([]);
@@ -117,7 +117,6 @@ export const useResources = (): UseResourcesReturn => {
   };
 
   const viewResource = (resource: Resource) => {
-    // Add to recently viewed (avoid duplicates and limit to 5)
     const isAlreadyViewed = recentlyViewed.some(item => item.id === resource.id);
     let newRecentlyViewed: Resource[];
     
@@ -136,10 +135,6 @@ export const useResources = (): UseResourcesReturn => {
 
   const getResourceById = (id: string) => {
     return allResources.find(resource => resource.id === id);
-  };
-
-  const getUpcomingProjects = () => {
-    return upcomingProjects;
   };
 
   return {
